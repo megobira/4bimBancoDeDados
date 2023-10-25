@@ -20,3 +20,17 @@ END;
 
 DELETE FROM Clientes WHERE nome = 'Maria Eduarda';
 SELECT * FROM Auditoria;
+
+-- 03 
+DELIMITER //
+CREATE TRIGGER mudar_nome AFTER UPDATE ON Clientes FOR EACH ROW
+BEGIN
+  INSERT INTO Auditoria (mensagem) VALUES (CONCAT('O nome do cliente foi alterado de "', OLD.nome, '" para "', NEW.nome));
+END;
+//DELIMITER ;
+
+INSERT INTO Clientes (nome)
+VALUES ('Maria Eduarda');
+
+UPDATE Clientes SET nome = 'Duda';
+SELECT * FROM Auditoria;
