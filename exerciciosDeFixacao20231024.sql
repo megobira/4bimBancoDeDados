@@ -49,3 +49,18 @@ END;
 
 UPDATE Clientes SET nome = '';
 SELECT * FROM Auditoria;
+
+-- 05 
+DELIMITER //
+CREATE TRIGGER produtos_em_estoque AFTER INSERT ON Pedidos FOR EACH ROW
+BEGIN
+    UPDATE Produtos
+    SET estoque = estoque - NEW.quantidade
+    WHERE id = NEW.produto_id;
+
+    IF (SELECT estoque FROM Produtos WHERE id = NEW.produto_id) < 5 THEN
+        INSERT INTO Auditoria (mensagem)
+        VALUES (CONCAT('Estoque do produto ficou abaixo de 5 unidades.'));
+    END IF;
+END;
+//DELIMITER ;
