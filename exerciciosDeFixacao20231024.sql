@@ -34,3 +34,18 @@ VALUES ('Maria Eduarda');
 
 UPDATE Clientes SET nome = 'Duda';
 SELECT * FROM Auditoria;
+
+-- 04
+DELIMITER //
+CREATE TRIGGER nao_atualizar BEFORE UPDATE ON Clientes FOR EACH ROW
+BEGIN
+    IF NEW.nome IS NULL OR NEW.nome = '' THEN
+        INSERT INTO Auditoria (mensagem)
+        VALUES (CONCAT('Tentativa inválida de atualização do nome do cliente para vazio ou nulo'));
+        SET NEW.nome = OLD.nome;
+    END IF;
+END;
+//DELIMITER ;
+
+UPDATE Clientes SET nome = '';
+SELECT * FROM Auditoria;
